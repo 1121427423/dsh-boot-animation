@@ -15,7 +15,8 @@
 * 全部 `yuv420p` + bt709(tv) + **faststart**，浏览器 `<video>` 与片库路由都直接可用。
 * 音频是**合成的原创音效**（次低音涌动 + 噪声拉升 + 冲击 + 铺底 pad + 收尾铃声），
   AAC 32 kHz 立体声 128 kb/s；实测 RMS −19.7 dBFS、峰值 −2.6 dBFS。
-* 编码忠实度（1080p 交付 vs 无损 2K 母版）：升维 **47.5 dB**（PSNR avg）。
+* 编码忠实度：母版（无损 RGB）与 2K 交付同帧对比，抽样帧 RGB **MAE ≈ 2.6/255（1.0%）**，
+  符合 CRF 15 + 4:2:0 色度下采样的预期；升维另有 PSNR **47.5 dB** 记录。
 
 `preview-*.png` 是每段抽帧；`art/contact_sheet.png` 是全部素材一览；
 `art/refine_compare.png`、`art/q2_compare.png` 是《同频》前两轮的对照，

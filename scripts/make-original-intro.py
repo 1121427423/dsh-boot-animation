@@ -35,6 +35,7 @@ FONTS = '/tmp/fonts/ofl'
 F_CN = f'{FONTS}/notosanssc/NotoSansSC[wght].ttf'
 F_UI = f'{FONTS}/rajdhani/Rajdhani-Bold.ttf'
 BRAND_FRAME = os.path.join(REPO, 'media', 'original', 'art', 'ref_brand_hero.png')
+WHALE_MASK = os.path.join(REPO, 'media', 'original', 'art', 'whale_mask.png')
 FPS = 24
 BASE_W, BASE_H = 2560, 1440
 XFADE = 0.30
@@ -265,6 +266,36 @@ def wordmark(palette: dict) -> Image.Image:
     return mark
 
 
+def whale(palette: dict) -> Image.Image:
+    """The DeepSeek whale mark, inked in the clip palette like the wordmark.
+
+    The reference artwork is a flat brand-blue glyph on a transparency
+    checkerboard; the shape is taken from its colour saturation, so the belly
+    cut-out and the eye ring survive as holes rather than being painted over.
+    """
+    key = ('whale',) + tuple(palette['wordmark'][1])
+    if key in _wordmark_cache:
+        return _wordmark_cache[key]
+    from PIL import ImageOps
+
+    mask = Image.open(WHALE_MASK).convert('L')
+
+    # same material as the lettering: average the wordmark's colour row by row,
+    # then stretch that ramp over the mark so both read as one lockup
+    ref = wordmark(palette)
+    arr = np.asarray(ref.convert('RGB'), np.float32)
+    al = np.asarray(ref.getchannel('A'), np.float32)[..., None] / 255.0
+    prof = (arr * al).sum(1) / np.maximum(al.sum(1), 1e-3)      # (h, 3)
+    idx = np.linspace(0.0, len(prof) - 1.0, mask.height)
+    rows = np.stack([np.interp(idx, np.arange(len(prof)), prof[:, c]) for c in range(3)], 1)
+    rgb = Image.fromarray(np.repeat(np.clip(rows, 0, 255).astype(np.uint8)[:, None, :],
+                                    mask.width, 1))
+    mark = rgb.convert('RGBA')
+    mark.putalpha(mask)
+    _wordmark_cache[key] = mark
+    return mark
+
+
 # ------------------------------------------------------------------------- text
 def text_layer(size: tuple[int, int], clip: dict, progress: float, t_show: float) -> Image.Image:
     pal = clip['palette']
@@ -285,15 +316,33 @@ def text_layer(size: tuple[int, int], clip: dict, progress: float, t_show: float
     layer.alpha_composite(scrim)
 
     mark = wordmark(pal)
-    mw = int(620 * s)
+    mw = int(556 * s)
     mark = mark.resize((mw, max(1, int(mark.height * mw / mark.width))), Image.LANCZOS)
-    halo = Image.new('RGBA', (mark.width + 40, mark.height + 40), (0, 0, 0, 0))
-    sil = Image.new('RGBA', mark.size, (2, 4, 10, 210))
-    sil.putalpha(mark.getchannel('A').point(lambda v: min(255, int(v * 0.95))))
-    halo.alpha_composite(sil, (20, 20))
-    halo = halo.filter(ImageFilter.GaussianBlur(13))
-    layer.alpha_composite(halo, (int(196 * s) - 20, int(356 * s) - 20))
-    layer.alpha_composite(mark, (int(196 * s), int(356 * s)))
+    lock_x, lock_y = int(196 * s), int(356 * s)
+
+    # the whale rides to the left of the lettering: one brand lockup
+    wh = whale(pal)
+    whh = int(mark.height * 0.94)
+    wh = wh.resize((max(1, int(wh.width * whh / wh.height)), whh), Image.LANCZOS)
+    gap = int(30 * s)
+    lock_w = wh.width + gap + mark.width
+    wh_x = lock_x
+    # letter baseline, not the descender of "p", is what the mark sits on
+    wh_y = lock_y + mark.height - int(mark.height * 0.19) - wh.height
+    mark_x = lock_x + wh.width + gap
+
+    pad = int(24 * s)
+    halo = Image.new('RGBA', (lock_w + 2 * pad, max(mark.height, wh.height) + 2 * pad),
+                     (0, 0, 0, 0))
+    silhouette = Image.new('RGBA', halo.size, (2, 4, 10, 0))
+    for art, (ax, ay) in ((wh, (pad, pad)), (mark, (pad + wh.width + gap, pad))):
+        sil = Image.new('RGBA', art.size, (2, 4, 10, 215))
+        sil.putalpha(art.getchannel('A').point(lambda v: min(255, int(v * 0.95))))
+        silhouette.alpha_composite(sil, (ax, ay))
+    halo = Image.alpha_composite(halo, silhouette).filter(ImageFilter.GaussianBlur(13 * s / 1.0))
+    layer.alpha_composite(halo, (lock_x - pad, lock_y - pad))
+    layer.alpha_composite(wh, (wh_x, wh_y))
+    layer.alpha_composite(mark, (mark_x, lock_y))
 
     d = ImageDraw.Draw(layer)
     f_cn = ImageFont.truetype(F_CN, int(52 * s))

@@ -7,8 +7,8 @@
 
 | 文件 | 规格 | 时长/帧数 | 大小 |
 | --- | --- | --- | --- |
-| `deepseek-resonance-intro-1080p.mp4` | 1920×1080 · 24fps · H.264 High@4.1 · CRF15 | 8.00s / 192 帧 | 14.7 MB |
-| `deepseek-resonance-intro-2k.mp4` | 2560×1440 · High@5.1 · CRF15 | 8.00s / 192 帧 | 37.7 MB |
+| `deepseek-resonance-intro-1080p.mp4` | 1920×1080 · 24fps · H.264 High@4.1 · CRF15 | 8.00s / 192 帧 | 13.9 MB |
+| `deepseek-resonance-intro-2k.mp4` | 2560×1440 · High@5.1 · CRF15 | 8.00s / 192 帧 | 36.4 MB |
 | `deepseek-ascension-intro-1080p.mp4` | 1920×1080 · 24fps · High@4.1 · CRF15 | 7.60s / 182 帧 | 18.9 MB |
 | `deepseek-ascension-intro-2k.mp4` | 2560×1440 · High@5.1 · CRF15 | 7.60s / 182 帧 | 39.6 MB |
 
@@ -17,7 +17,22 @@
   AAC 32 kHz 立体声 128 kb/s；实测 RMS −19.7 dBFS、峰值 −2.6 dBFS。
 * 编码忠实度（1080p 交付 vs 无损 2K 母版）：同频 **51.2 dB**、升维 **47.5 dB**（PSNR avg）。
 
-`preview-*.png` 是每段 5 个时间点的抽帧；`art/contact_sheet.png` 是全部素材一览。
+`preview-*.png` 是每段抽帧；`art/contact_sheet.png` 是全部素材一览；
+`art/refine_compare.png` 是《同频》优化前后的对照。
+
+### 优化轮（按反馈调整）
+
+第二轮针对《同频》做了三处调整（都在 `art/q1_*.png`，逐帧比对见 `art/refine_compare.png`）：
+
+* **肖像**（`q1_portrait`）：暖金主光从左侧扫过脸颊、冷青补光在右，主角移到画面右侧，
+  标题区留出左侧暗区，字标不再压在脸上。
+* **数据墙**（`q1_wall`）：去掉头顶光环，改成左上落下的暖金光束 + 青色面板阵列，
+  强化"人站在数据面前"的构图。
+* **眼中数据流**（`q1_eye`）：减少横穿画面的杂线，保留 2–3 条细流，加了眼里的高光点，
+  朱砂色/青色两道粒子流对比更干净。
+
+镜头顺序（8.00s）：数据厅建立 → 数据墙（暖金光束）→ 触碰面板 → **肖像** → **眼中数据流**（闪光切）
+→ 回到数据厅收尾 + 字标。
 
 ## 两段内容
 

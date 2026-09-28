@@ -420,12 +420,12 @@ CLIPS: dict[str, dict] = {
         status=['ANALYSIS', 'THINKING', 'SEARCHING', 'GENERATING'],
         palette=PALETTES['resonance'],
         shots=[
-            Shot('r1_wide', 0.0, 1.7, (0.50, 0.55, 0.46), (0.50, 0.52, 0.36), streaks=3, fade_in=0.6),
-            Shot('q1_wall', 1.7, 3.1, (0.43, 0.50, 0.46), (0.46, 0.52, 0.38), streaks=2),
+            Shot('q3_hall', 0.0, 1.7, (0.50, 0.47, 0.96), (0.50, 0.44, 0.76), streaks=2, fade_in=0.6),
+            Shot('q3_hall_b', 1.7, 3.1, (0.50, 0.44, 0.92), (0.50, 0.40, 0.72), streaks=2),
             Shot('r1_hand', 3.1, 4.3, (0.47, 0.50, 0.42), (0.50, 0.50, 0.32), streaks=2),
             Shot('q1_portrait', 4.3, 5.5, (0.64, 0.46, 0.82), (0.64, 0.46, 0.68), streaks=0),
-            Shot('q1_eye', 5.5, 6.3, (0.50, 0.50, 0.62), (0.50, 0.50, 0.42), streaks=2),
-            Shot('r1_wide', 6.3, 8.0, (0.50, 0.52, 0.30), (0.50, 0.50, 0.40), flash_in=0.13, streaks=2),
+            Shot('q3_eye', 5.5, 6.3, (0.50, 0.50, 0.60), (0.50, 0.50, 0.44), streaks=0),
+            Shot('q3_hall', 6.3, 8.0, (0.50, 0.44, 0.74), (0.50, 0.47, 0.96), flash_in=0.13, streaks=2),
         ],
     ),
     'ascension': dict(

@@ -303,7 +303,7 @@ def main() -> int:
     for spec in args.targets.split(','):
         tw, th = (int(x) for x in spec.strip().lower().split('x'))
         base = os.path.splitext(os.path.basename(src))[0]
-        suffix = f'{th}p' if th in (720, 1080, 1440, 2160) else f'{tw}x{th}'
+        suffix = {720: '720p', 1080: '1080p', 1440: '2k', 2160: '4k'}.get(th, f'{tw}x{th}')
         out = os.path.join(args.out, f'{base}-{suffix}.mp4')
         log(f'encode {tw}x{th} -> {out}')
         info = encode_target(ff, master_list, audio if has_audio else '', (tw, th),

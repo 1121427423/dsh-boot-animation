@@ -1,0 +1,43 @@
+{
+  "source": {
+    "path": "/home/user/dsh-boot-animation/media/deepseek-startup-intro.mp4",
+    "bytes": 3305269,
+    "duration": 8.05,
+    "width": 1280,
+    "height": 720,
+    "fps": 24.0,
+    "video_codec": "h264",
+    "audio_codec": "aac",
+    "sha256": "ba72c501021444cd4bd89ce2cf547a539dfb0874c985a03859d048ee013acb4f"
+  },
+  "sr_model": {
+    "file": "realesr_general_x4v3.ncnn.bin",
+    "sha256": "8fdd6052f8931091164a570ee7b5c5b2d1dcd991112d464eb9ae1a5b52ece553",
+    "scale": 4
+  },
+  "targets": {
+    "1920x1080": {
+      "path": "/tmp/hqwork/out/deepseek-startup-intro-1080p.mp4",
+      "bytes": 21786094,
+      "duration": 8.05,
+      "audio_codec": "aac",
+      "width": 1920,
+      "height": 1080,
+      "fps": 24.0,
+      "video_codec": "h264",
+      "psnr_vs_lossless_master_db": "48.33"
+    },
+    "2560x1440": {
+      "path": "/tmp/hqwork/out/deepseek-startup-intro-2k.mp4",
+      "bytes": 35251349,
+      "duration": 8.05,
+      "audio_codec": "aac",
+      "width": 2560,
+      "height": 1440,
+      "fps": 24.0,
+      "video_codec": "h264",
+      "psnr_vs_lossless_master_db": "49.07"
+    }
+  },
+  "created": "2026-09-28T11:50:55Z"
+}

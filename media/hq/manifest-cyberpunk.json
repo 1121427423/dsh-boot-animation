@@ -1,0 +1,43 @@
+{
+  "source": {
+    "path": "media/deepseek-cyberpunk-intro.mp4",
+    "bytes": 1856280,
+    "duration": 7.05,
+    "width": 1280,
+    "height": 720,
+    "fps": 24.0,
+    "video_codec": "h264",
+    "audio_codec": "aac",
+    "sha256": "beabf5956e0b467e9f06f467b3f5b7a682abb6555c1b16aee1c27f7e5b334a58"
+  },
+  "sr_model": {
+    "file": "realesr_general_x4v3.ncnn.bin",
+    "sha256": "8fdd6052f8931091164a570ee7b5c5b2d1dcd991112d464eb9ae1a5b52ece553",
+    "scale": 4
+  },
+  "targets": {
+    "1920x1080": {
+      "path": "media/hq/deepseek-cyberpunk-intro-1080p.mp4",
+      "bytes": 11765709,
+      "duration": 7.05,
+      "audio_codec": "aac",
+      "width": 1920,
+      "height": 1080,
+      "fps": 24.0,
+      "video_codec": "h264",
+      "psnr_vs_lossless_master_db": "51.25"
+    },
+    "2560x1440": {
+      "path": "media/hq/deepseek-cyberpunk-intro-2k.mp4",
+      "bytes": 19621070,
+      "duration": 7.05,
+      "audio_codec": "aac",
+      "width": 2560,
+      "height": 1440,
+      "fps": 24.0,
+      "video_codec": "h264",
+      "psnr_vs_lossless_master_db": "51.96"
+    }
+  },
+  "created": "2026-09-28T13:38:05Z"
+}

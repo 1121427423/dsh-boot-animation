@@ -1,0 +1,43 @@
+{
+  "source": {
+    "path": "media/deepseek-awakening-intro.mp4",
+    "bytes": 2600325,
+    "duration": 7.05,
+    "width": 1280,
+    "height": 720,
+    "fps": 24.0,
+    "video_codec": "h264",
+    "audio_codec": "aac",
+    "sha256": "ff5afe0dabc16e09d5d1d4a349a551173a872f5c9850c0aab358ebaaf4b09712"
+  },
+  "sr_model": {
+    "file": "realesr_general_x4v3.ncnn.bin",
+    "sha256": "8fdd6052f8931091164a570ee7b5c5b2d1dcd991112d464eb9ae1a5b52ece553",
+    "scale": 4
+  },
+  "targets": {
+    "1920x1080": {
+      "path": "media/hq/deepseek-awakening-intro-1080p.mp4",
+      "bytes": 17114419,
+      "duration": 7.05,
+      "audio_codec": "aac",
+      "width": 1920,
+      "height": 1080,
+      "fps": 24.0,
+      "video_codec": "h264",
+      "psnr_vs_lossless_master_db": "48.02"
+    },
+    "2560x1440": {
+      "path": "media/hq/deepseek-awakening-intro-2k.mp4",
+      "bytes": 28198253,
+      "duration": 7.05,
+      "audio_codec": "aac",
+      "width": 2560,
+      "height": 1440,
+      "fps": 24.0,
+      "video_codec": "h264",
+      "psnr_vs_lossless_master_db": "48.83"
+    }
+  },
+  "created": "2026-09-28T13:39:13Z"
+}

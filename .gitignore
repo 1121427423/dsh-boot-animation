@@ -7,3 +7,6 @@ boot.mp4.original-backup
 
 # 构建日志
 build-log.txt
+
+# 中间产物：AI 素材的 4x 放大件（可由 media/original/art/ 重新生成）
+media/original/sr/

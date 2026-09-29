@@ -25,6 +25,7 @@ import os
 import subprocess
 import sys
 import wave
+import zlib
 
 import numpy as np
 from PIL import Image, ImageDraw, ImageFilter, ImageFont
@@ -518,7 +519,7 @@ def render_frame(t: float, clip: dict, parts: Particles, vg: Image.Image,
     frame.alpha_composite(glow)
 
     parts.draw(frame, t, sh.particles * min(1.0, 0.35 + t * 0.5))
-    draw_streaks(frame, t, seed=hash(sh.art) % 9973, count=sh.streaks, alpha=64,
+    draw_streaks(frame, t, seed=zlib.crc32(sh.art.encode()) % 9973, count=sh.streaks, alpha=64,
                  colour=pal['accent'])
     frame.alpha_composite(vg, (0, 0))
 
@@ -547,11 +548,14 @@ def main() -> int:
     ap.add_argument('--work', default='/tmp/orig')
     ap.add_argument('--out', default=os.path.join(REPO, 'media', 'original'))
     ap.add_argument('--crf', type=float, default=15)
+    ap.add_argument('--max-frames', type=int, default=0, help='debug: stop early')
     args = ap.parse_args()
 
     clip = CLIPS[args.clip]
     dur = clip['duration']
     total = int(round(dur * FPS))
+    if args.max_frames:
+        total = min(total, args.max_frames)
     os.makedirs(args.work, exist_ok=True)
     os.makedirs(args.out, exist_ok=True)
     base = f'deepseek-{args.clip}-intro'
@@ -586,8 +590,11 @@ def main() -> int:
 
     for tag, (w, h), level, ref in (('2k', (2560, 1440), '5.1', 5), ('1080p', (1920, 1080), '4.1', 4)):
         out = os.path.join(args.out, f'{base}-{tag}.mp4')
-        vf = 'format=yuv420p' if (w, h) == (BASE_W, BASE_H) else \
-            f'scale={w}:{h}:flags=lanczos:out_color_matrix=bt709:out_range=tv,format=yuv420p'
+        # the master is full-range RGB: convert with an explicit bt709 matrix or the
+        # 2K pass (same size as the master) falls back to swscale's bt601 default
+        # while the file is tagged bt709 — a silent hue/brightness shift.
+        vf = (f'scale={w}:{h}:flags=lanczos+accurate_rnd:out_color_matrix=bt709:'
+              'out_range=tv,format=yuv420p')
         subprocess.run([ffmpeg(), '-hide_banner', '-v', 'warning', '-y', '-i', master,
                         '-i', wav, '-map', '0:v:0', '-map', '1:a:0', '-vf', vf,
                         '-c:v', 'libx264', '-preset', 'slow', '-crf', str(args.crf),

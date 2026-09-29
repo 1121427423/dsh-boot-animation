@@ -8,15 +8,16 @@
 | 文件 | 规格 | 时长/帧数 | 大小 |
 | --- | --- | --- | --- |
 | `deepseek-resonance-intro-1080p.mp4` | 1920×1080 · 24fps · H.264 High@4.1 · CRF15 | 8.00s / 192 帧 | 17.4 MB |
-| `deepseek-resonance-intro-2k.mp4` | 2560×1440 · High@5.1 · CRF15 | 8.00s / 192 帧 | 38.5 MB |
+| `deepseek-resonance-intro-2k.mp4` | 2560×1440 · High@5.1 · CRF15 | 8.00s / 192 帧 | 46.1 MB |
 | `deepseek-ascension-intro-1080p.mp4` | 1920×1080 · 24fps · High@4.1 · CRF15 | 7.60s / 182 帧 | 18.9 MB |
-| `deepseek-ascension-intro-2k.mp4` | 2560×1440 · High@5.1 · CRF15 | 7.60s / 182 帧 | 41.1 MB |
+| `deepseek-ascension-intro-2k.mp4` | 2560×1440 · High@5.1 · CRF15 | 7.60s / 182 帧 | 48.1 MB |
 
 * 全部 `yuv420p` + bt709(tv) + **faststart**，浏览器 `<video>` 与片库路由都直接可用。
 * 音频是**合成的原创音效**（次低音涌动 + 噪声拉升 + 冲击 + 铺底 pad + 收尾铃声），
   AAC 32 kHz 立体声 128 kb/s；实测 RMS −19.7 dBFS、峰值 −2.6 dBFS。
-* 编码忠实度：母版（无损 RGB）与 2K 交付同帧对比，抽样帧 RGB **MAE ≈ 2.6/255（1.0%）**，
-  符合 CRF 15 + 4:2:0 色度下采样的预期；升维另有 PSNR **47.5 dB** 记录。
+* 编码忠实度（对无损母版，PSNR avg）：同频 1080p **49.6 / 中位 43.8** dB、2K **50.3 / 中位 43.7** dB；
+  升维 1080p **47.6 / 中位 42.9** dB、2K **48.4 / 中位 43.2** dB（颗粒噪声帧拉低均值，中位更能代表观感）。
+  新旧两代同口径对照见 `SCORECARD.md`。
 
 `preview-*.png` 是每段抽帧；`art/contact_sheet.png` 是全部素材一览；
 `art/refine_compare.png`、`art/q2_compare.png` 是《同频》前两轮的对照，
@@ -106,3 +107,11 @@ cp media/original/deepseek-*-intro-1080p.mp4 ~/.dsh/boot-animation/videos/
 
 `lib/clips.data.js` 未改动（内置片源仍是原来四段）；若要把它俩设成内置片源，
 把 `scripts/embed-clips.mjs` 的清单加上这两段再 `npm run embed-clips`。
+
+## 修正记录（对比评测时发现）
+
+* **2K 档色彩矩阵**：与母版同尺寸时 `format=yuv420p` 会走 swscale 的 bt601 默认系数，而文件标 bt709
+  （实测 ΔY 3.31 级）。已改为显式 `scale=...:out_color_matrix=bt709:out_range=tv`，复测 ΔY −0.22 级，
+  两档 1080p↔2K 一致性 43.9–44.6 dB。
+* **渲染可复现**：分镜数据流的随机种子原为 Python `hash()`（逐进程随机），两次渲染结果不同。
+  改为 `zlib.crc32` 后两次试渲染的成片逐字节一致。

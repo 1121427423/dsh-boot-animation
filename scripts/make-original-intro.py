@@ -67,13 +67,13 @@ PALETTES = {
     'resonance': dict(
         accent=(126, 228, 255), accent2=(255, 198, 126), ui=(150, 208, 236),
         glow=(128, 216, 255), wordmark=((16, 52, 78), (124, 202, 240), (244, 253, 255)),
-        under=(255, 198, 126),
+        under=(255, 198, 126), bg_black=0.55,
     ),
     # violet / magenta + amber: deliberately away from every existing clip
     'ascension': dict(
         accent=(236, 150, 255), accent2=(255, 176, 104), ui=(226, 178, 246),
         glow=(226, 150, 250), wordmark=((52, 18, 72), (206, 130, 236), (255, 246, 255)),
-        under=(255, 176, 104),
+        under=(255, 176, 104), bg_black=0.55,
     ),
 }
 
@@ -495,6 +495,26 @@ CLIPS: dict[str, dict] = {
 }
 
 
+def darken_background(frame: Image.Image, strength: float, lo: float = 0.10,
+                      hi: float = 0.42) -> Image.Image:
+    """Push the dark field toward black, leave the lit subject alone.
+
+    Gain is a function of luminance: everything at or below ``lo`` is scaled by
+    ``1 - strength``, everything at or above ``hi`` is untouched, smoothstepped in
+    between.  The subject is lit and the sets are dark, so this deepens the
+    background without dimming the character or the light beams.
+    """
+    if strength <= 0:
+        return frame
+    arr = np.asarray(frame.convert('RGB'), np.float32) / 255.0
+    lum = arr @ np.array([0.2126, 0.7152, 0.0722], np.float32)
+    t = np.clip((lum - lo) / max(hi - lo, 1e-6), 0.0, 1.0)
+    soft = t * t * (3.0 - 2.0 * t)
+    gain = (1.0 - strength) + strength * soft
+    arr *= gain[..., None]
+    return Image.fromarray(np.clip(arr * 255.0 + 0.5, 0, 255).astype(np.uint8)).convert('RGBA')
+
+
 def render_frame(t: float, clip: dict, parts: Particles, vg: Image.Image,
                  grain_seed: int) -> Image.Image:
     shots: list[Shot] = clip['shots']
@@ -508,6 +528,7 @@ def render_frame(t: float, clip: dict, parts: Particles, vg: Image.Image,
         nxt = shots[idx + 1]
         a = ease((t - (sh.t1 - XFADE)) / XFADE)
         frame = Image.blend(frame, nxt.frame(t, (BASE_W, BASE_H)).convert('RGBA'), a)
+    frame = darken_background(frame, float(pal.get('bg_black', 0.0)))
 
     # bloom: threshold the brights, blur, add back
     small = frame.convert('RGB').resize((BASE_W // 4, BASE_H // 4), Image.BILINEAR)

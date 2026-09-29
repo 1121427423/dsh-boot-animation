@@ -7,17 +7,17 @@
 
 | 文件 | 规格 | 时长/帧数 | 大小 |
 | --- | --- | --- | --- |
-| `deepseek-resonance-intro-1080p.mp4` | 1920×1080 · 24fps · H.264 High@4.1 · CRF15 | 8.00s / 192 帧 | 17.4 MB |
-| `deepseek-resonance-intro-2k.mp4` | 2560×1440 · High@5.1 · CRF15 | 8.00s / 192 帧 | 46.1 MB |
+| `deepseek-resonance-intro-1080p.mp4` | 1920×1080 · 24fps · H.264 High@4.1 · CRF15 | 8.00s / 192 帧 | 17.7 MB |
+| `deepseek-resonance-intro-2k.mp4` | 2560×1440 · High@5.1 · CRF15 | 8.00s / 192 帧 | 47.5 MB |
 | `deepseek-ascension-intro-1080p.mp4` | 1920×1080 · 24fps · High@4.1 · CRF15 | 7.60s / 182 帧 | 18.9 MB |
-| `deepseek-ascension-intro-2k.mp4` | 2560×1440 · High@5.1 · CRF15 | 7.60s / 182 帧 | 48.1 MB |
+| `deepseek-ascension-intro-2k.mp4` | 2560×1440 · High@5.1 · CRF15 | 7.60s / 182 帧 | 47.6 MB |
 
 * 全部 `yuv420p` + bt709(tv) + **faststart**，浏览器 `<video>` 与片库路由都直接可用。
 * 音频是**合成的原创音效**（次低音涌动 + 噪声拉升 + 冲击 + 铺底 pad + 收尾铃声），
   AAC 32 kHz 立体声 128 kb/s；实测 RMS −19.7 dBFS、峰值 −2.6 dBFS。
 * 编码忠实度（对无损母版，PSNR avg）：同频 1080p **49.6 / 中位 43.8** dB、2K **50.3 / 中位 43.7** dB；
   升维 1080p **47.6 / 中位 42.9** dB、2K **48.4 / 中位 43.2** dB（颗粒噪声帧拉低均值，中位更能代表观感）。
-  新旧两代同口径对照见 `SCORECARD.md`。
+  新旧两代同口径对照见 `SCORECARD.md`（背景压黑后中位 ≈42–44 dB）。
 
 `preview-*.png` 是每段抽帧；`art/contact_sheet.png` 是全部素材一览；
 `art/refine_compare.png`、`art/q2_compare.png` 是《同频》前两轮的对照，
@@ -107,6 +107,22 @@ cp media/original/deepseek-*-intro-1080p.mp4 ~/.dsh/boot-animation/videos/
 
 `lib/clips.data.js` 未改动（内置片源仍是原来四段）；若要把它俩设成内置片源，
 把 `scripts/embed-clips.mjs` 的清单加上这两段再 `npm run embed-clips`。
+
+## 背景压黑（最新一轮）
+
+按"背景再偏黑一点"调整：新增 `darken_background()` —— **按亮度做增益曲线**，`lo=0.10` 以下
+按 `1-0.55` 增益压暗、`hi=0.42` 以上完全不动，中间 smoothstep 过渡。因为人物是打光的、
+布景是暗的，所以暗场被压深而**主体、光柱、霓虹线、字标都不变暗**。作用点在镜头叠化之后、
+泛光之前，每段 `bg_black=0.55` 可调。
+
+| 指标 | 上一版 | 压黑版 |
+| --- | --- | --- |
+| 全帧均值（同级灰） 同频 / 升维 | 62.9 / 51.1 | **56.6 / 43.2** |
+| 暗部均值（P40 以下） 同频 / 升维 | 25.4 / 25.1 | **18.2 / 16.2** |
+| ≤8 级（近黑）像素占比 同频 / 升维 | 9.9% / 6.3% | **20.5% / 30.5%** |
+
+逐镜对照见 `art/darken-compare.png`（上排上一版、下排压黑版，同帧同位）。复测：解码无错误、
+冻结/黑场 0、运动相关 1.0000、时域噪声比 0.97–0.99×、双档 1080p↔2K 一致。
 
 ## 修正记录（对比评测时发现）
 
